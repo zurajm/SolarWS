@@ -26,6 +26,7 @@ substitutions:
   awake_duration: 30s
   update_fq: 25s
   sleep_duration: 5min
+  elevation: 'value of elevation of your home'
   battery_full: '3.16'
   battery_empty: '2.492'
   battery_diff: '0.668' # '${battery_full}-${battery_empty}'
@@ -91,18 +92,22 @@ sensor:
     address: 0x76
     temperature:
       name: '${display_name} WS Temperature'
+      id: internal_temp
       oversampling: 4x
       unit_of_measurement: "°C"
       icon: "mdi:thermometer"
       device_class: "temperature"
       state_class: "measurement"
-      accuracy_decimals: 1      
+      accuracy_decimals: 1
     pressure:
       name: '${display_name} Pressure'
       oversampling: 4x
       unit_of_measurement: "hPa"
       device_class: "pressure"
       state_class: "measurement"
+      filters:
+        - lambda: |-
+            return ((x * powf((1 - (0.0065*${elevation})/(id(internal_temp).state+(0.0065*${elevation})+273.15)),-5.257) ));
     humidity:
       name: '${display_name} Humidity'
       oversampling: 4x
